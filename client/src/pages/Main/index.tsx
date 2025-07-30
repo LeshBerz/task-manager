@@ -4,8 +4,9 @@ import { Calendar, momentLocalizer } from 'react-big-calendar';
 import moment from 'moment';
 import { useTaskStore } from '@entities/task/store/TaskStore';
 import { useNavigate } from 'react-router-dom';
-import { Select, Button, Space } from 'antd';
+import { Select, Button, Space, Spin } from 'antd';
 import { observer } from 'mobx-react-lite';
+import './styles.css';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 
 /**
@@ -88,12 +89,10 @@ const Main: React.FC = observer(() => {
   ];
 
   return (
-    <div className="p-4 max-w-7xl mx-auto">
-      <h1 className="text-2xl font-bold mb-4 dark:text-white">
-        {t('main.title')}
-      </h1>
+    <div className="main-container">
+      <h1 className="main-title">{t('main.title')}</h1>
       {/* Filters and Sorting */}
-      <div className="mb-4 flex flex-wrap gap-4">
+      <div className="filter-container">
         <Space>
           <Select
             placeholder={t('task.filter.status')}
@@ -126,25 +125,34 @@ const Main: React.FC = observer(() => {
           <Button
             type="primary"
             onClick={() => navigate('/task/new')}
-            className="bg-blue-500"
+            className="create-button"
           >
             {t('task.create')}
           </Button>
         </Space>
       </div>
       {/* Calendar */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4">
-        <Calendar
-          localizer={localizer}
-          events={events}
-          startAccessor="start"
-          endAccessor="end"
-          style={{ height: 600 }}
-          onSelectEvent={handleSelectEvent}
-          onSelectSlot={handleSelectSlot}
-          selectable
-          className="dark:text-white"
-        />
+      <div className="calendar-container">
+        {taskStore.isLoading ? (
+          <div className="flex justify-center items-center h-[600px]">
+            <Spin size="large" />
+          </div>
+        ) : (
+          <Calendar
+            localizer={localizer}
+            events={events}
+            startAccessor="start"
+            endAccessor="end"
+            style={{ height: 600 }}
+            onSelectEvent={handleSelectEvent}
+            onSelectSlot={handleSelectSlot}
+            selectable
+            className="calendar"
+            eventPropGetter={(event) => ({
+              className: 'hover:bg-blue-100 dark:hover:bg-blue-900 cursor-pointer',
+            })}
+          />
+        )}
       </div>
     </div>
   );
